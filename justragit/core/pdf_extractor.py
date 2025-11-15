@@ -13,7 +13,7 @@ try:
 except ImportError:
     raise ImportError(
         "pypdf is required for PDF support. Install it with: pip install pypdf"
-    )
+    ) from None
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +78,8 @@ def extract_text_from_pdf(file_path: Path, max_pages: Optional[int] = None) -> s
         return full_text
 
     except Exception as e:
-        logger.error(f"Failed to extract text from PDF {file_path}: {e}")
-        raise ValueError(f"Error processing PDF file {file_path}: {e}")
+        logger.exception(f"Failed to extract text from PDF {file_path}: {e}")
+        raise ValueError(f"Error processing PDF file {file_path}: {e}") from e
 
 
 def is_valid_pdf(file_path: Path) -> bool:
