@@ -1,169 +1,90 @@
-# Just RAG It 🚀
-
-**Zero-ceremony RAG. Bring your docs, get semantic search in 3 lines.**
-
-Extracted from [Chimera](https://github.com/yourusername/chimera) and battle-tested in production.
+# Just RAG It 🚀  
+**Zero-ceremony semantic search over your docs.**
 
 ---
 
-## Why?
+## TL;DR  
+```bash
+pip install justragit
+export VOYAGE_API_KEY=your_key
+```
 
-Most RAG libraries are either bloated (LangChain) or too basic. Just RAG It hits the sweet spot:
+```python
+from justragit import RAG
+rag = RAG("docs/", whitelist=["**/*.md"])
+await rag.initialize()
+results = await rag.search("thing i want to search for")
+```
 
-| Feature | Just RAG It | LangChain | LlamaIndex | Simple Wrappers |
-|---------|-------------|-----------|------------|-----------------|
-| **Setup** | 3 lines | 30+ lines | Medium | 1 line |
-| **Weight** | Lightweight | Heavy | Medium | Minimal |
-| **Incremental** | File-hash smart | Manual | Good | None |
-| **Production** | Built-in patterns | Complex | Moderate | DIY |
+Done.  
+Incremental updates, smart chunking, gitignore respect, and production-grade error handling are all baked in.
 
 ---
 
 ## Install
-
 ```bash
-pip install justragit
-export VOYAGE_API_KEY="your-key"  # Get at voyageai.com
+pip install justragit          # PyPI
+# or
+pip install -e .               # repo
 ```
-
-Python 3.10+ required.
+Python ≥3.10, `VOYAGE_API_KEY` env var.
 
 ---
 
-## Quickstart
-
+## One-file script
 ```python
-import asyncio
-from justragit import RAG
+import asyncio, justragit as jr
 
 async def main():
-    # 1. Point to docs
-    rag = RAG(
-        base_path="/path/to/docs",
-        whitelist=["**/*.md", "**/*.py"],
-        blacklist=["*/archive/"]
-    )
-
-    # 2. Build index (incremental by default)
-    await rag.initialize()
-
-    # 3. Search
-    results = await rag.search("How do I authenticate?", top_k=5)
-
-    for r in results:
-        print(f"{r.metadata['file_path']} ({r.score:.2f})\n{r.content}\n")
+    r = jr.RAG("src/", whitelist=["**/*.py"])
+    await r.initialize()
+    for hit in await r.search("auth middleware"):
+        print(hit.metadata['file_path'], hit.score, hit.content[:200])
 
 asyncio.run(main())
 ```
 
-That's it. No config files, no boilerplate, no surprises.
-
 ---
 
-## Features in Action
-
-### Smart Incremental Updates
-```python
-await rag.initialize()  # First run: embeds everything
-await rag.initialize()  # Second run: only changed files
-```
-
-### YAML Persistence
+## YAML for reuse
 ```yaml
 # my-docs.yaml
-base_path: "/project"
-whitelist: ["docs/", "**/*.py"]
-blacklist: ["*/tests/*"]
-chunk_min_tokens: 400
-chunk_max_tokens: 600
+base_path: ./docs
+whitelist: ["**/*.md"]
+top_k: 5
 ```
-
 ```python
 rag = RAG.from_yaml("my-docs.yaml")
 ```
 
-### Code + Natural Language
-```python
-# Handles functions, classes, paragraphs intelligently
-# Targets ~500 tokens/chunk, respects boundaries
-```
+---
+
+## knobs you’ll actually touch
+| param | default | what it does |
+|-------|---------|--------------|
+| `chunk_min_tokens` | 400 | smallest chunk |
+| `chunk_max_tokens` | 600 | largest chunk |
+| `top_k` | 5 | hits per query |
+| `max_file_size` | 1 MB | skip big blobs |
+| `respect_gitignore` | True | honour `.gitignore` |
 
 ---
 
-## What You Get
-
-- **Context-aware chunking** - Splits code and prose intelligently (400-600 tokens, configurable)
-- **File-hash tracking** - Zero API waste on unchanged files
-- **Gitignore-aware** - Respects `.gitignore` automatically
-- **Production patterns** - Batching, rate limiting, error handling built-in
-- **Provider-agnostic** - Voyage AI today, OpenAI/Cohere/local tomorrow (Phase 2)
-- **ChromaDB backend** - Persistent, queryable, per-file metadata
-
----
-
-## Advanced Patterns
-
-### Batch Config
-Embeddings auto-batch: 128 items max, 60K tokens max, 3s between batches.
-
-### Programmatic Filtering
-```python
-rag = RAG(
-    base_path="./project",
-    whitelist=["core/**/*.py", "docs/*.md", "README.md"],
-    blacklist=["*/archive/*", "*/tests/*", "*/__pycache__/*"],
-    max_file_size=2_000_000  # 2MB limit
-)
-```
-
-### Environment
-```bash
-VOYAGE_API_KEY=""        # Required
-CHROMADB_DIR=""          # Optional: custom Chroma path
-```
+## how it works
+1. **Discover** – whitelist/blacklist + gitignore  
+2. **Chunk** – code-aware, tiktoken-counted  
+3. **Hash** – per-file, skip unchanged  
+4. **Embed** – Voyage AI (batched, rate-limited)  
+5. **Store** – ChromaDB on disk  
+6. **Search** – cosine similarity, return top-k
 
 ---
 
-## Architecture
-
-```
-RAG (API)
-├── FileDiscovery (whitelist/blacklist/gitignore)
-├── DocumentChunker (tiktoken, context-aware)
-├── VoyageEmbeddingService (async, batched)
-└── VectorStore (ChromaDB, file-hash indexed)
-```
+## roadmap (PRs welcome)
+Phase 2 – OpenAI/Cohere/local providers, rich CLI  
+Phase 3 – BM25 hybrid, re-rankers, metrics
 
 ---
 
-## Roadmap
-
-**✅ Phase 1 (Now)**: MVP extracted from Chimera - core features, Voyage AI, incremental updates, YAML config
-
-**🚧 Phase 2 (Next)**: Multi-provider (OpenAI, Cohere, local), rich CLI, cookbook, progress bars
-
-**🔮 Phase 3 (Future)**: Pluggable chunking, hybrid search (BM25), cross-encoder re-ranking, metrics
-
----
-
-## Development & Contributing
-
-```bash
-git clone https://github.com/yourusername/justragit
-cd justragit
-pip install -e ".[dev]"
-pytest                    # Run tests
-black justragit/ && ruff justragit/  # Format/lint
-```
-
-**Help wanted**: Additional providers, specialized chunking (Tree-sitter), CLI polish, performance.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
----
-
-## License & Support
-
-MIT License. [GitHub Issues](https://github.com/yourusername/justragit/issues) for bugs, Discussions for Q&A.
-
-**Built by developers tired of over-engineered RAG.**
+## licence
+MIT
