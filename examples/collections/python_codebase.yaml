@@ -1,0 +1,18 @@
+name: "Python Codebase"
+description: "Search through Python source code and documentation"
+base_path: "/path/to/python/project"
+whitelist_paths:
+  - "**/*.py"
+  - "**/*.md"
+  - "README.md"
+  - "docs/"
+blacklist_paths:
+  - "*/tests/"
+  - "*/archive/"
+  - "*/__pycache__/"
+  - "*/venv/"
+  - "*/.venv/"
+  - "*/node_modules/"
+chunk_min_tokens: 400
+chunk_max_tokens: 600
+top_k: 5

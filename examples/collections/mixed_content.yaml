@@ -1,0 +1,24 @@
+name: "Mixed Content"
+description: "Search across code, docs, and config files"
+base_path: "/path/to/project"
+whitelist_paths:
+  - "src/"
+  - "docs/"
+  - "**/*.md"
+  - "**/*.py"
+  - "**/*.js"
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.json"
+  - "**/*.yaml"
+  - "**/*.yml"
+blacklist_paths:
+  - "*/archive/"
+  - "*/node_modules/"
+  - "*/__pycache__/"
+  - "*/dist/"
+  - "*/build/"
+  - "*/.git/"
+chunk_min_tokens: 400
+chunk_max_tokens: 600
+top_k: 5
