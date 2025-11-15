@@ -11,13 +11,13 @@ export VOYAGE_API_KEY=your_key
 
 ```python
 from justragit import RAG
-rag = RAG("docs/", whitelist=["**/*.md"])
+rag = RAG("docs/", whitelist=["**/*.md", "**/*.pdf"])
 await rag.initialize()
 results = await rag.search("thing i want to search for")
 ```
 
-Done.  
-Incremental updates, smart chunking, gitignore respect, and production-grade error handling are all baked in.
+Done.
+Incremental updates, smart chunking, PDF support, gitignore respect, and production-grade error handling are all baked in.
 
 ---
 
@@ -71,12 +71,18 @@ rag = RAG.from_yaml("my-docs.yaml")
 ---
 
 ## how it works
-1. **Discover** – whitelist/blacklist + gitignore  
-2. **Chunk** – code-aware, tiktoken-counted  
-3. **Hash** – per-file, skip unchanged  
-4. **Embed** – Voyage AI (batched, rate-limited)  
-5. **Store** – ChromaDB on disk  
+1. **Discover** – whitelist/blacklist + gitignore
+2. **Chunk** – code-aware, tiktoken-counted
+3. **Hash** – per-file, skip unchanged
+4. **Embed** – Voyage AI (batched, rate-limited)
+5. **Store** – ChromaDB on disk
 6. **Search** – cosine similarity, return top-k
+
+### supported file types
+- **Code**: `.py`, `.js`, `.ts`, `.java`, `.cpp`, `.go`, `.rs`, etc.
+- **Docs**: `.md`, `.txt`, `.rst`
+- **Data**: `.json`, `.yaml`, `.toml`, `.xml`
+- **PDFs**: `.pdf` (text extraction via pypdf)
 
 ---
 

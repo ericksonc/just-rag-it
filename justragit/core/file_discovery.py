@@ -123,8 +123,14 @@ class FileDiscovery:
 
         # Load the file
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            # Handle PDF files with special extraction
+            if file_path.suffix.lower() == '.pdf':
+                from .pdf_extractor import extract_text_from_pdf
+                content = extract_text_from_pdf(file_path)
+            else:
+                # Standard text file reading
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
 
             documents[rel_path_str] = content
 
@@ -159,6 +165,7 @@ class FileDiscovery:
             '.json', '.yaml', '.yml', '.toml', '.ini', '.cfg', '.conf', '.env',
             '.md', '.rst', '.txt',
             '.dockerfile', '.makefile', '.sql',
+            '.pdf',
         }
 
         # Check common filenames without extensions
