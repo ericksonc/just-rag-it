@@ -22,7 +22,7 @@ __version__ = "0.1.0"
 from .api import RAG
 from .core.chunker import DocumentChunker, Chunk
 from .core.embeddings import VoyageEmbeddingService, EmbeddingResult
-from .core.vector_store import VectorStore, SearchResult
+from .core.vector_store import VectorStore, SearchResult, format_results
 from .config import CollectionConfig
 
 __all__ = [
@@ -33,5 +33,6 @@ __all__ = [
     "EmbeddingResult",
     "VectorStore",
     "SearchResult",
+    "format_results",
     "CollectionConfig",
 ]
