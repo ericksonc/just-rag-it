@@ -26,6 +26,85 @@ class SearchResult:
     metadata: Dict[str, Any]
     chunk_index: int
 
+    def to_string(self, template: Optional[str] = None) -> str:
+        """Format this search result as a string.
+
+        Args:
+            template: Optional f-string template. Available variables:
+                - {file_path}: Path to the source file
+                - {score}: Similarity score (0-1)
+                - {content}: Chunk content
+                - {chunk_index}: Index of this chunk in the file
+                Default template shows file path, score, and content.
+
+        Returns:
+            Formatted string representation
+
+        Raises:
+            ValueError: If template contains invalid field names
+
+        Example:
+            >>> result.to_string()
+            ## docs/auth.md (relevance: 0.85)
+            Authentication is handled by...
+            ---
+
+            >>> result.to_string("File: {file_path}\\n{content}")
+            File: docs/auth.md
+            Authentication is handled by...
+        """
+        if template is None:
+            # Default template: clean, LLM-friendly format
+            file_path = self.metadata.get('file_path', 'unknown')
+            return f"## {file_path} (relevance: {self.score:.2f})\n{self.content}\n\n---"
+
+        # Custom template - provide access to common fields
+        try:
+            return template.format(
+                file_path=self.metadata.get('file_path', 'unknown'),
+                score=self.score,
+                content=self.content,
+                chunk_index=self.chunk_index
+            )
+        except KeyError as e:
+            raise ValueError(
+                f"Invalid field in template: {e}. "
+                f"Available fields: file_path, score, content, chunk_index"
+            ) from e
+
+
+def format_results(results: List[SearchResult], template: Optional[str] = None) -> str:
+    """Format a list of search results into a single string.
+
+    This is the main utility for converting RAG search results into
+    a string ready to pass to an LLM.
+
+    Args:
+        results: List of SearchResult objects from a search query
+        template: Optional f-string template for each result. Available variables:
+            - {file_path}: Path to the source file
+            - {score}: Similarity score (0-1)
+            - {content}: Chunk content
+            - {chunk_index}: Index of this chunk in the file
+            Default template creates a clean, markdown-formatted output.
+
+    Returns:
+        Formatted string with all results combined
+
+    Example:
+        >>> results = await rag.search("authentication")
+        >>> context = format_results(results)
+        >>> # Pass to LLM:
+        >>> prompt = f"Based on these docs:\\n\\n{context}\\n\\nAnswer: How does auth work?"
+
+        >>> # Custom template:
+        >>> context = format_results(results, "Source: {file_path}\\n{content}\\n")
+    """
+    if not results:
+        return ""
+
+    return "\n\n".join(result.to_string(template) for result in results)
+
 
 class VectorStore:
     """ChromaDB-based vector store for document embeddings.

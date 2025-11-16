@@ -10,10 +10,12 @@ export VOYAGE_API_KEY=your_key
 ```
 
 ```python
-from justragit import RAG
+from justragit import RAG, format_results
+
 rag = RAG("docs/", whitelist=["**/*.md", "**/*.pdf"])
 await rag.initialize()
-results = await rag.search("thing i want to search for")
+results = await rag.search("thing i want to search for")  # objects with .content, .score, .metadata
+context = format_results(results)  # string ready for agent context
 ```
 
 Done.
@@ -42,6 +44,31 @@ async def main():
         print(hit.metadata['file_path'], hit.score, hit.content[:200])
 
 asyncio.run(main())
+```
+
+---
+
+## LLM-ready output
+```python
+from justragit import RAG, format_results
+
+rag = RAG("docs/", whitelist=["**/*.md"])
+await rag.initialize()
+results = await rag.search("authentication")
+
+# Default format (clean, markdown-style):
+context = format_results(results)
+# ## docs/auth.md (relevance: 0.85)
+# Authentication is handled by...
+# ---
+# ## src/auth.py (relevance: 0.72)
+# ...
+
+# Pass to LLM:
+prompt = f"Based on these docs:\n\n{context}\n\nAnswer: How does auth work?"
+
+# Custom template:
+context = format_results(results, "Source: {file_path}\n{content}\n")
 ```
 
 ---
