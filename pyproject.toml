@@ -45,10 +45,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/justragit"
-Documentation = "https://github.com/yourusername/justragit#readme"
-Repository = "https://github.com/yourusername/justragit"
-Issues = "https://github.com/yourusername/justragit/issues"
+Homepage = "https://github.com/ericksonc/just-rag-it"
+Documentation = "https://github.com/ericksonc/just-rag-it#readme"
+Repository = "https://github.com/ericksonc/just-rag-it"
+Issues = "https://github.com/ericksonc/just-rag-it/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["justragit"]

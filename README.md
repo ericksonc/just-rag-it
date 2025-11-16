@@ -3,9 +3,8 @@
 
 ---
 
-## TL;DR  
+## TL;DR
 ```bash
-pip install justragit
 export VOYAGE_API_KEY=your_key
 ```
 
@@ -25,9 +24,7 @@ Incremental updates, smart chunking, PDF support, gitignore respect, and product
 
 ## Install
 ```bash
-pip install justragit          # PyPI
-# or
-pip install -e .               # repo
+pip install -e .               # install from repo
 ```
 Python ≥3.10, `VOYAGE_API_KEY` env var.
 
