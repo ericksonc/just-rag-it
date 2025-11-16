@@ -9,7 +9,7 @@ description = "Zero-ceremony RAG for your documents"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Chris Erickson", email = "chris@didacticflux.com"}
 ]
 requires-python = ">=3.10"
 keywords = ["rag", "retrieval", "embeddings", "semantic-search", "llm", "ai"]

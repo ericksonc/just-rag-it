@@ -146,9 +146,9 @@ class OpenAIProvider(EmbeddingProvider):
 
 ## Questions?
 
-- Open an [issue](https://github.com/yourusername/justragit/issues)
-- Start a [discussion](https://github.com/yourusername/justragit/discussions)
-- Email: your.email@example.com
+- Open an [issue](https://github.com/ericksonc/justragit/issues)
+- Start a [discussion](https://github.com/ericksonc/justragit/discussions)
+- Email: chris@didacticflux.com
 
 ## Code of Conduct
 
