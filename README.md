@@ -14,10 +14,8 @@ from justragit import RAG, format_results
 
 rag = RAG("docs/", whitelist=["**/*.md", "**/*.pdf"])
 await rag.initialize()
-results = await rag.search("thing i want to search for")
-
-# Get a string ready for your LLM:
-context = format_results(results)
+results = await rag.search("thing i want to search for")  # objects with .content, .score, .metadata
+context = format_results(results)  # string ready for agent context
 ```
 
 Done.
