@@ -40,6 +40,9 @@ class SearchResult:
         Returns:
             Formatted string representation
 
+        Raises:
+            ValueError: If template contains invalid field names
+
         Example:
             >>> result.to_string()
             ## docs/auth.md (relevance: 0.85)
@@ -56,12 +59,18 @@ class SearchResult:
             return f"## {file_path} (relevance: {self.score:.2f})\n{self.content}\n\n---"
 
         # Custom template - provide access to common fields
-        return template.format(
-            file_path=self.metadata.get('file_path', 'unknown'),
-            score=self.score,
-            content=self.content,
-            chunk_index=self.chunk_index
-        )
+        try:
+            return template.format(
+                file_path=self.metadata.get('file_path', 'unknown'),
+                score=self.score,
+                content=self.content,
+                chunk_index=self.chunk_index
+            )
+        except KeyError as e:
+            raise ValueError(
+                f"Invalid field in template: {e}. "
+                f"Available fields: file_path, score, content, chunk_index"
+            ) from e
 
 
 def format_results(results: List[SearchResult], template: Optional[str] = None) -> str:
